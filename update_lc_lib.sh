@@ -1,0 +1,1 @@
+pip3 install  --force-reinstall --no-deps git+https://github.com/littlecapa/littlecapasLib

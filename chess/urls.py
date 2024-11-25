@@ -15,7 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from . import views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('twic/', views.display_twic_status, name='display_twic_status'),
+    path('download/', views.download_twic, name='download_twic'),
+    path('cancel/', views.cancel_action, name='cancel_action'),
 ]
+

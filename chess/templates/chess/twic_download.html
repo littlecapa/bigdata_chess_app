@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Display</title>
+    <script>
+        function handleDownload() {
+            fetch("{% url 'download_twic' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error("Error:", error));
+        }
+
+        function handleCancel() {
+            fetch("{% url 'cancel_action' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}"
+                }
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
+</head>
+<body>
+    <h1>TWIC Status</h1>
+    <p>Latest Download: {{ last_download_number }}</p>
+    <p>Available: {{ available_number }}</p>
+
+    <button onclick="handleDownload()" {% if not can_download_new %}disabled{% endif %}>Download</button>
+    <button onclick="handleCancel()">Cancel</button>
+</body>
+</html>
