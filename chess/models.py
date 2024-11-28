@@ -73,8 +73,9 @@ class TwicConfigModel(models.Model):
     
 STATUS_NEW = 0
 STATUS_DOWNLOADED = 1
-STATUS_SPLITTED = 2
-STATUS_PROCESSED = 3
+STATUS_UNZIPPED = 1
+STATUS_SPLITTED = 3
+STATUS_PROCESSED = 4
 
 class LichessStatusModel(models.Model):
     year = models.PositiveIntegerField()  # Year field

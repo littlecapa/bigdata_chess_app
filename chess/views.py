@@ -1,19 +1,17 @@
-# views.py
 from django.shortcuts import render
 from django.http import JsonResponse
 
-# Mock values for demonstration
-last_download_number = 10
-available_number = 20
+from .proxies.twic_proxy import TwicProxy
 
 def display_twic_status(request):
     """
     Render the page with the numbers and buttons.
     """
+    twic_proxy = TwicProxy()
     return render(request, "chess/twic_download.html", {
-        "last_download_number": last_download_number,
-        "available_number": available_number,
-        "can_download_new": available_number > last_download_number,
+        "last_download_number": twic_proxy.last_issue,
+        "available_number": twic_proxy.highest_issue,
+        "can_download_new": twic_proxy.highest_issue > twic_proxy.last_issue,
     })
 
 def download_twic(request):

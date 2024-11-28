@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import LichessConfigModel, LichessFolderConfigModel, LichessStatusModel, TwicConfigModel, TwicFolderConfigModel, TwicStatusModel
 
-
 @admin.register(LichessStatusModel)
 class LichessStatusModelAdmin(admin.ModelAdmin):
     pass
