@@ -1,7 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
+import logging
+import json
 
 from .proxies.twic_proxy import TwicProxy
+
+logger = logging.getLogger(__name__)
 
 def display_twic_status(request):
     """
@@ -18,11 +22,23 @@ def download_twic(request):
     """
     Logic to handle the 'Download' button.
     """
-    # Replace this with your actual download logic
-    return JsonResponse({"status": "success", "message": "Download started!"})
+    if request.method == "POST":
+        try:
+            twic_proxy = TwicProxy()
+            twic_proxy.get_next_twic()
+            return JsonResponse({
+                "status": "success", 
+                "message": "Download done!", 
+                "updated_last_download_number": twic_proxy.last_issue
+            }, status=200)
+        except (ValueError, TypeError, json.JSONDecodeError) as e:
+            logger.error(f"Error during download: {str(e)}")
+            return JsonResponse({"status": "error", "message": "Unable to Download TWIC"}, status=400)
+        except Exception as e:
+            logger.error(f"Unexpected error: {str(e)}")
+            return JsonResponse({"status": "error", "message": "Unexpected error during download"}, status=500)
+    return JsonResponse({"status": "error", "message": "Invalid TWIC download request method"}, status=405)
 
-def cancel_action(request):
-    """
-    Logic to handle the 'Cancel' button.
-    """
-    return JsonResponse({"status": "cancelled", "message": "Action cancelled!"})
+def main_page(request):
+    print("Main")
+    return render(request, "chess/main_page.html")
