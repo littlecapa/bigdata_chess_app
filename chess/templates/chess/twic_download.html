@@ -1,59 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TWIC Status</title>
-    <meta name="csrf-token" content="{{ csrf_token }}">
-    <script>
-        function handleDownload() {
-            const lastDownload = parseInt(document.querySelector("#lastDownload").textContent, 10);
-            const available = parseInt({{ available_number }}, 10);
+{% extends "chess/master.html" %}
 
-            if (isNaN(lastDownload) || isNaN(available)) {
-                alert("Invalid download or available number.");
-                return;
+{% block title %}TWIC Status{% endblock %}
+
+{% block content %}
+<h1 class="title">TWIC Status</h1>
+<div class="module">
+    <form id="twicStatusForm" onsubmit="event.preventDefault(); handleDownload();" class="aligned">
+        <fieldset class="module aligned">
+            <div class="form-row">
+                <label for="lastDownload">Latest Download:</label>
+                <span id="lastDownload">{{ last_download_number }}</span>
+            </div>
+            <div class="form-row">
+                <label for="availableNumber">Available:</label>
+                <span id="availableNumber">{{ available_number }}</span>
+            </div>
+        </fieldset>
+        <div class="form-row">
+            <button id="downloadButton" type="button" onclick="handleDownload()" 
+                {% if not can_download_new %}disabled{% endif %}>
+                Download
+            </button>
+            <button type="button" onclick="handleCancel()">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function handleDownload() {
+        const lastDownload = parseInt(document.querySelector("#lastDownload").textContent, 10);
+        const available = parseInt(document.querySelector("#availableNumber").textContent, 10);
+
+        if (isNaN(lastDownload) || isNaN(available)) {
+            alert("Invalid download or available number.");
+            return;
+        }
+
+        fetch("{% url 'download_twic' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                last_download_number: lastDownload,
+                available_number: available
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                alert(data.message);
+
+                // Update the displayed last_download_number dynamically
+                document.querySelector("#lastDownload").textContent = data.updated_last_download_number;
+                document.querySelector("#downloadButton").disabled = true;
+            } else {
+                alert(data.message);
             }
+        })
+        .catch(error => console.error("Error:", error));
+    }
 
-            fetch("{% url 'download_twic' %}", {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    last_download_number: lastDownload,
-                    available_number: available
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === "success") {
-                    alert(data.message);
-
-                    // Update the displayed last_download_number dynamically
-                    document.querySelector("#lastDownload").textContent = data.updated_last_download_number;
-                    document.querySelector("#downloadButton").disabled = true;
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => console.error("Error:", error));
-        }
-    
-        function handleCancel() {
-            // Perform the cancel action by redirecting to the main page
-            window.location.href = "{% url 'main_page' %}";
-        }
-
-    </script>
-</head>
-<body>
-    <h1>TWIC Status</h1>
-    <p>Latest Download: <span id="lastDownload">{{ last_download_number }}</span></p>
-    <p>Available: {{ available_number }}</p>
-
-    <button onclick="handleDownload()" {% if not can_download_new %}disabled{% endif %}>Download</button>
-    <button onclick="handleCancel()">Cancel</button>
-</body>
-</html>
+    function handleCancel() {
+        window.location.href = "{% url 'main_page' %}";
+    }
+</script>
+{% endblock %}

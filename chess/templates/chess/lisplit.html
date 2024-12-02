@@ -1,0 +1,70 @@
+{% extends "chess/master.html" %}
+
+{% block title %}LiSplit{% endblock %}
+
+{% block content %}
+<h1 class="title">LiSplit</h1>
+<div class="module">
+    <form id="splitForm" onsubmit="event.preventDefault(); handleSplit();" class="aligned">
+        <fieldset class="module aligned">
+            <div class="form-row">
+                <label for="year">Year:</label>
+                <input type="text" id="year" name="year" value="{{ year }}" required>
+            </div>
+            <div class="form-row">
+                <label for="month">Month:</label>
+                <input type="text" id="month" name="month" value="{{ month }}" required>
+            </div>
+            <div class="form-row">
+                <label for="source_folder">Source Folder:</label>
+                <input type="text" id="source_folder" name="source_folder" value="{{ source_folder }}" required>
+            </div>
+            <div class="form-row">
+                <label for="target_folder">Target Folder:</label>
+                <input type="text" id="target_folder" name="target_folder" value="{{ target_folder }}" required>
+            </div>
+        </fieldset>
+        <div class="form-row">
+            <button type="submit" class="button">Split</button>
+            <button type="button" onclick="handleCancel()" class="button">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function handleSplit() {
+        const year = document.getElementById("year").value;
+        const month = document.getElementById("month").value;
+        const sourceFolder = document.getElementById("source_folder").value;
+        const targetFolder = document.getElementById("target_folder").value;
+
+        fetch("{% url 'lisplit' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                year: year,
+                month: month,
+                source_folder: sourceFolder,
+                target_folder: targetFolder
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                alert(data.message);
+                window.location.href = "{% url 'main_page' %}";
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    }
+
+    function handleCancel() {
+        window.location.href = "{% url 'main_page' %}";
+    }
+</script>
+{% endblock %}

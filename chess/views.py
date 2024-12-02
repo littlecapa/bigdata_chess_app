@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 import logging
 import json
+import subprocess
 
 from .proxies.twic_proxy import TwicProxy
+from .proxies.li_proxy import LiProxy
 
 logger = logging.getLogger(__name__)
 
@@ -40,5 +42,44 @@ def download_twic(request):
     return JsonResponse({"status": "error", "message": "Invalid TWIC download request method"}, status=405)
 
 def main_page(request):
-    print("Main")
     return render(request, "chess/main_page.html")
+
+def lisplit(request):
+    """
+    Renders the lisplit page with input fields and buttons.
+    """
+    li_proxy = LiProxy()
+    default_values = {
+        "year": "2024",
+        "month": "11",
+        "source_folder": li_proxy.download_folder_path,
+        "target_folder": li_proxy.unzip_folder_path,
+    }
+
+    if request.method == "POST":
+        data = json.loads(request.body) 
+        year = data.get("year")
+        month = data.get("month")
+        source_folder = data.get("source_folder")
+        target_folder = data.get("target_folder")
+
+        print(year, month, source_folder, target_folder)
+        if year and month and source_folder and target_folder:
+            try:
+                # Run the shell script in the background
+                subprocess.Popen([li_proxy.script_name_unzst, year, month, source_folder, target_folder])
+                li_proxy.unzip_started(year, month)
+                # Show a success message
+                return JsonResponse({"status": "success", "message": "Split started successfully!"})
+            except Exception as e:
+                return JsonResponse({"status": "error", "message": str(e)})
+        else:
+            return JsonResponse({"status": "error", "message": "All fields are required!"})
+
+    return render(request, "chess/lisplit.html", default_values)
+
+def execute_split(request):
+    """
+    After executing the split, redirect to the main page.
+    """
+    return redirect("main_page")

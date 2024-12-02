@@ -23,5 +23,7 @@ urlpatterns = [
     path("", views.main_page, name="main_page"),
     path('twic/', views.display_twic_status, name='display_twic_status'),
     path('download/', views.download_twic, name='download_twic'),
+    path('lisplit/', views.lisplit, name='lisplit'),
+    path('execute_split/', views.execute_split, name='execute_split'),
 ]
 
