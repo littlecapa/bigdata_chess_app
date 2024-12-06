@@ -83,3 +83,32 @@ def execute_split(request):
     After executing the split, redirect to the main page.
     """
     return redirect("main_page")
+
+
+def liprocess(request):
+    """
+    Renders the lisplit page with input fields and buttons.
+    """
+    li_proxy = LiProxy()
+    default_values = {
+        "year": "2024",
+        "month": "11",
+    }
+
+    if request.method == "POST":
+        data = json.loads(request.body) 
+        year = data.get("year")
+        month = data.get("month")
+
+        if year and month:
+            try:
+                print("Start Extract")
+                li_proxy.extract(year, month)
+                # Show a success message
+                return JsonResponse({"status": "success", "message": "Process successfully!"})
+            except Exception as e:
+                return JsonResponse({"status": "error", "message": str(e)})
+        else:
+            return JsonResponse({"status": "error", "message": "All fields are required!"})
+
+    return render(request, "chess/liprocess.html", default_values)

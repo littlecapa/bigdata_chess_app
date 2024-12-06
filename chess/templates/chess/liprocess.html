@@ -1,0 +1,58 @@
+{% extends "chess/master.html" %}
+
+{% block title %}LiSplit{% endblock %}
+
+{% block content %}
+<h1 class="title">Process Lichess Files</h1>
+<div class="module">
+    <form id="splitForm" onsubmit="event.preventDefault(); handleProcess();" class="aligned">
+        <fieldset class="module aligned">
+            <div class="form-row">
+                <label for="year">Year:</label>
+                <input type="text" id="year" name="year" value="{{ year }}" required>
+            </div>
+            <div class="form-row">
+                <label for="month">Month:</label>
+                <input type="text" id="month" name="month" value="{{ month }}" required>
+            </div>
+        </fieldset>
+        <div class="form-row">
+            <button type="submit" class="button">Process</button>
+            <button type="button" onclick="handleCancel()" class="button">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function handleProcess() {
+        const year = document.getElementById("year").value;
+        const month = document.getElementById("month").value;
+
+        fetch("{% url 'liprocess' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                year: year,
+                month: month
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                alert(data.message);
+                window.location.href = "{% url 'main_page' %}";
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    }
+
+    function handleCancel() {
+        window.location.href = "{% url 'main_page' %}";
+    }
+</script>
+{% endblock %}

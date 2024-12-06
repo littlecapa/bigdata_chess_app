@@ -24,6 +24,7 @@ urlpatterns = [
     path('twic/', views.display_twic_status, name='display_twic_status'),
     path('download/', views.download_twic, name='download_twic'),
     path('lisplit/', views.lisplit, name='lisplit'),
+    path('liprocess/', views.liprocess, name='liprocess'),
     path('execute_split/', views.execute_split, name='execute_split'),
 ]
 

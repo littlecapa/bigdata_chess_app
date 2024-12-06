@@ -1,7 +1,7 @@
 import os
-from libs.lcl.lcl.twic import download_twic_file, get_highest_twic_issue
-from libs.lcl.lcl.net_lib import get_local_ip
-from libs.lcl.lcl.singleton import SingletonMeta
+from lcl.lcl.twic import download_twic_file, get_highest_twic_issue
+from lcl.lcl.net_lib import get_local_ip
+from lcl.lcl.singleton import SingletonMeta
 from ..models import TwicConfigModel, TwicFolderConfigModel, TwicStatusModel, STATUS_UNZIPPED
 
 
