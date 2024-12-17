@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-from lcl.lcl.twic import download_twic_file, get_highest_twic_issue
 from lcl.lcl.net_lib import get_local_ip
 from lcl.lcl.singleton import SingletonMeta
 from lcl.lcl.pgn_file_manager import PgnFileManager
@@ -31,9 +30,12 @@ class LiProxy(metaclass=SingletonMeta):
             raise Exception(e)
         self.download_folder_path = self.li_folder.download_folder_path
         self.unzip_folder_path = self.li_folder.unzip_folder_path
+        self.eco_complete_folder_path = self.li_folder.eco_complete_folder_path
         self.eco_split_folder_path = self.li_folder.eco_split_folder_path
+        self.evaluated_complete_folder_path = self.li_folder.evaluated_complete_folder_path
         self.evaluated_folder_path = self.li_folder.evaluated_folder_path
         self.script_name_unzst = self.li_config.script_name_unzst
+        self.script_name_concat = self.li_config.script_name_concat
         self.elo_min_eco = self.li_config.elo_min_eco
         self.elo_min_commented = self.li_config.elo_min_commented
         os.makedirs(self.unzip_folder_path, exist_ok=True)

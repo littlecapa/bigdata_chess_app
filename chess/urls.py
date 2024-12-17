@@ -17,7 +17,6 @@ from django.contrib import admin
 from django.urls import path
 from . import views
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", views.main_page, name="main_page"),
@@ -25,6 +24,7 @@ urlpatterns = [
     path('download/', views.download_twic, name='download_twic'),
     path('lisplit/', views.lisplit, name='lisplit'),
     path('liprocess/', views.liprocess, name='liprocess'),
+    path('liconcat/', views.liconcat, name='liconcat'),
     path('execute_split/', views.execute_split, name='execute_split'),
 ]
 

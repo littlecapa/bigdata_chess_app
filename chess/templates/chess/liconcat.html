@@ -1,0 +1,75 @@
+{% extends "chess/master.html" %}
+
+{% block title %}LiConcat{% endblock %}
+
+{% block content %}
+<h1 class="title">Concat Lichess Files</h1>
+<div class="module">
+    <form id="splitForm" onsubmit="event.preventDefault(); handleConcat();" class="aligned">
+        <fieldset class="module aligned">
+            <div class="form-row">
+                <label for="source_folder">Source Folder:</label>
+                <input type="text" id="source_folder" name="source_folder" value="{{ source_folder }}" required>
+            </div>
+            <div class="form-row">
+                <label for="target_folder">Target Folder:</label>
+                <input type="text" id="target_folder" name="target_folder" value="{{ target_folder }}" required>
+            </div>
+            <div class="form-row">
+                <label for="source_folder_eval">Source Folder (Eval.):</label>
+                <input type="text" id="source_folder_eval" name="source_folder_eval" value="{{ source_folder_eval }}" required>
+            </div>
+            <div class="form-row">
+                <label for="target_folder_eval">Target Folder (Eval.):</label>
+                <input type="text" id="target_folder_eval" name="target_folder_eval" value="{{ target_folder_eval }}" required>
+            </div>
+        </fieldset>
+        <div class="form-row">
+            <button type="submit" class="button">Concat</button>
+            <button type="button" onclick="handleCancel()" class="button">Cancel</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function handleConcat() {
+        const sourceFolder = document.getElementById("source_folder").value;
+        const targetFolder = document.getElementById("target_folder").value;
+        const sourceFolderEval = document.getElementById("source_folder_eval").value;
+        const targetFolderEval = document.getElementById("target_folder_eval").value;
+
+        fetch("{% url 'liconcat' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                source_folder: sourceFolder,
+                target_folder: targetFolder,
+                source_folder_eval: sourceFolderEval,
+                target_folder_eval: targetFolderEval
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === "success") {
+                alert(data.message);
+                window.location.href = "{% url 'main_page' %}";
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    }
+
+    function handleCancel() {
+        window.location.href = "{% url 'main_page' %}";
+    }
+</script>
+{% endblock %}

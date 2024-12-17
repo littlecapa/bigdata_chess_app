@@ -112,3 +112,42 @@ def liprocess(request):
             return JsonResponse({"status": "error", "message": "All fields are required!"})
 
     return render(request, "chess/liprocess.html", default_values)
+
+def liconcat(request):
+    """
+    Renders the lisplit page with input fields and buttons.
+    """
+    li_proxy = LiProxy()
+    default_values = {
+        "source_folder": li_proxy.eco_split_folder_path,
+        "target_folder": li_proxy.eco_complete_folder_path,
+        "source_folder_eval": li_proxy.evaluated_folder_path,
+        "target_folder_eval": li_proxy.evaluated_complete_folder_path,
+    }
+
+    if request.method == "POST":
+        data = json.loads(request.body) 
+        source_folder = data.get("source_folder")
+        target_folder = data.get("target_folder")
+        source_folder_eval = data.get("source_folder_eval")
+        target_folder_eval = data.get("target_folder_eval")
+
+        print(source_folder, target_folder, source_folder_eval, target_folder_eval)
+        if source_folder and target_folder and source_folder_eval and target_folder_eval:
+            try:
+                # Run the shell script in the background
+                print(li_proxy.script_name_concat, source_folder, target_folder)
+                subprocess.Popen([li_proxy.script_name_concat, source_folder, target_folder])
+                print(li_proxy.script_name_concat, source_folder_eval, target_folder_eval)
+                subprocess.Popen([li_proxy.script_name_concat, source_folder_eval, target_folder_eval])
+                # Show a success message
+                return JsonResponse({"status": "success", "message": "Concat started successfully!"})
+            except Exception as e:
+                return JsonResponse({"status": "error", "message": str(e)})
+        else:
+            return JsonResponse({"status": "error", "message": "All fields are required!"})
+
+    return render(request, "chess/liconcat.html", default_values)
+
+def execute_concat(request):
+    return redirect("main_page")

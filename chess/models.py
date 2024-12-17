@@ -7,6 +7,8 @@ class LichessFolderConfigModel(models.Model):
     unzip_folder_path = models.CharField(max_length=255)
     eco_split_folder_path = models.CharField(max_length=255)
     evaluated_folder_path = models.CharField(max_length=255)
+    eco_complete_folder_path = models.CharField(max_length=255, default = "")
+    evaluated_complete_folder_path = models.CharField(max_length=255, default = "")
 
     @classmethod
     def load(cls):
@@ -41,6 +43,7 @@ class LichessConfigModel(models.Model):
     download_base_url = models.CharField(max_length=255, default = "https://database.lichess.org/")
     download_month_pattern = models.CharField(max_length=255, default = "standard/lichess_db_standard_rated_<<year>>-<<month>>.pgn.zst")
     script_name_unzst = models.CharField(max_length=255, default = "lichess_unzst.sh")
+    script_name_concat = models.CharField(max_length=255, default = "concat_pgn.sh")
     elo_min_eco = models.PositiveIntegerField(default = 2000)
     elo_min_commented = models.PositiveIntegerField(default = 2000)
 
